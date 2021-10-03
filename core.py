@@ -75,18 +75,20 @@ print(Fore.GREEN + "Bot running!" + Fore.WHITE)
 def main():
 	#Check In-game
 	find = search('hp', 0.8)
-	if find != False:
+	find1 = search('tab', 0.8)
+	if find != False or find1 != False:
 		#Check In-chat
 		find = search('chat', 0.75)
 		if find != False:
 			#Find Group Chat
 			find = search('group', 0.8)
-			if find != False:
+			find1 = search('consul', 0.8)
+			if find != False or find1 != False:
 				#Chat
 				type(random.choice(msgList))
 				time.sleep(0.1)
 				pyautogui.press("enter")
-				time.sleep(10)
+				time.sleep(waitTime)
 			else:
 				#Tab to Group Chat
 				pyautogui.press("tab")
