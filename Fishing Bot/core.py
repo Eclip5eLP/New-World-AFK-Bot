@@ -36,6 +36,8 @@ with open('settings.json') as f:
 appName = "New World Fishing Bot"
 bait = settings["bait"]
 reelTime = settings["reelTime"]
+reposX = settings["reposX"]
+reposY = settings["reposY"]
 
 #Vars
 version = "0.1"
@@ -98,6 +100,7 @@ while True:
 			find = search('catch', 0.7, True)
 			if find != False:
 				pyautogui.click(button='left')
+				region = pyautogui.screenshot('./images/region.png', region=(100, 100, 150, 150))
 				state = 4
 			else:
 				#Check Completed
@@ -107,12 +110,13 @@ while True:
 		elif state == 4: #Catch
 			stateMsg = "Catching fish..."
 			find = search('c_state1', 0.75, True)
-			if find != False:
+			find1 = search('c_state4', 0.75, True)
+			if find != False or find1 != False:
 				#Let loose
 				pyautogui.mouseUp(button='left')
 				stateMsg = stateMsg + " (Letting loose)"
 			else:
-				find = search('c_state2', 0.7, True)
+				find = search('c_state2', 0.6, True)
 				if find != False:
 					#Reel in
 					pyautogui.mouseDown(button='left')
@@ -121,7 +125,21 @@ while True:
 			#Check Completed
 			find = search('hook', 0.7, True)
 			if find != False:
+				state = 5
+		elif state == 5: #Check correct angle
+			stateMsg = "Checking angle..."
+			find = search('region', 0.75, False)
+			time.sleep(0.5)
+			if find != False:
 				state = 1
+			else:
+				#Change View
+				stateMsg = "Fixing angle..."
+				win32api.mouse_event(win32con.MOUSEEVENTF_MOVE, reposX, reposY, 0, 0)
+				time.sleep(1)
+				state = 1
+
+		#State Output
 		sys.stdout.write('\x1b[1A')
 		sys.stdout.write('\x1b[2K')
 		print(str(stateMsg))
