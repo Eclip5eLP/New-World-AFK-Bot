@@ -70,14 +70,12 @@ time.sleep(2)
 print(Fore.GREEN + "Bot running!" + Fore.WHITE)
 
 state = 1
+pyautogui.FAILSAFE = False
 stateMsg = "Checking for active fishing..."
 print("Checking...")
 
 #Main Loop
-def main():
-	global state
-	global reelTime
-
+while True:
 	#Check In-game
 	find = search('tab', 0.8)
 	if find != False:
@@ -108,13 +106,13 @@ def main():
 					state = 1
 		elif state == 4: #Catch
 			stateMsg = "Catching fish..."
-			find = search('c_state1', 0.7)
+			find = search('c_state1', 0.75, True)
 			if find != False:
 				#Let loose
 				pyautogui.mouseUp(button='left')
 				stateMsg = stateMsg + " (Letting loose)"
 			else:
-				find = search('c_state2', 0.7)
+				find = search('c_state2', 0.7, True)
 				if find != False:
 					#Reel in
 					pyautogui.mouseDown(button='left')
@@ -132,9 +130,6 @@ def main():
 		state = 1
 		print("Please open the game", end='\r')
 		time.sleep(5)
-	main()
-
-main()
 
 #Quit Application
 print(Fore.LIGHTRED_EX + "Quit" + Fore.WHITE)
