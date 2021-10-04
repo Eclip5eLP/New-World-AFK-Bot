@@ -1,6 +1,5 @@
 {
     "bait": "NULL",
     "reelTime": 1.8,
-    "reposX": 1750,
-    "reposY": -750
+    "repairCycle": 20
 }
