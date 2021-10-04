@@ -44,6 +44,7 @@ If you are on windows you can also just execute the ```run.bat``` file.<br/>
     "bait": "NULL",
     "reelTime": 1.8,
     "repairCycle": 20
+    "hotkeys": ["ctrl", "f11"]
 }
 ```
 <br/>
@@ -51,4 +52,4 @@ If you are on windows you can also just execute the ```run.bat``` file.<br/>
 ```bait``` - Use the specified bait for catching. (Currently not implemented)<br/>
 ```reelTime``` - Duration for which the reel will be held down (in seconds).<br/>
 ```repairCycle``` - Fishing cycles completed until trying to repair the fishing rod.<br/>
-
+```hotkeys``` - 1 = Pause Key, 2 = Quit Key.<br/>
