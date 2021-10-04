@@ -29,7 +29,7 @@ If you are on windows you can also just execute the ```run.bat``` file.<br/>
 
 ## Info
 
-This Bot will fish until your fishing rod breaks.<br/>
+Will start fishing once you press F3 to take out the fishing rod.<br/>
 
 ## How to use
 
@@ -43,13 +43,12 @@ If you are on windows you can also just execute the ```run.bat``` file.<br/>
 {
     "bait": "NULL",
     "reelTime": 1.8,
-    "reposX": 1750,
-    "reposY": -750
+    "repairCycle": 20
 }
 ```
 <br/>
 
 ```bait``` - Use the specified bait for catching. (Currently not implemented)<br/>
 ```reelTime``` - Duration for which the reel will be held down (in seconds).<br/>
-```reposX``` - Reposition X value after rare catch (Adjust if it doesnt fully reposition towards the water).<br/>
-```reposY``` - Reposition Y value after rare catch (Adjust if it doesnt fully reposition towards the water).<br/>
+```repairCycle``` - Fishing cycles completed until trying to repair the fishing rod.<br/>
+
