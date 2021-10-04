@@ -20,6 +20,7 @@ if missing:
 from pyautogui import *
 from datetime import datetime, timedelta
 from colorama import init, Fore, Back, Style
+from PIL import ImageGrab, Image
 import pyautogui
 import pydirectinput
 import time
@@ -28,6 +29,8 @@ import random
 import win32api, win32con
 import requests
 import json
+import numpy as np
+import cv2 as cv
 
 #Load Settings
 with open('settings.json') as f:
@@ -38,9 +41,11 @@ appName = "New World Fishing Bot"
 bait = settings["bait"]
 reelTime = settings["reelTime"]
 repairCycle = settings["repairCycle"]
+hotkeys = settings["hotkeys"]
 
 #Vars
 version = "0.1"
+paused = False
 
 init()
 
@@ -62,6 +67,13 @@ def search(img, conf=0.8, gray=False):
 	else:
 		return False
 
+#CV Image recognition
+def search_cv(img, conf=0.8, gray=False):
+	reg = ImageGrab.grab(bbox=(0, 0, win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1)))
+	img_cv = cv.cvtColor(np.array(reg), cv.COLOR_RGB2BGR)
+	res = cv.matchTemplate(img_cv, cv.imread('./images/' + img + '.png'), cv.TM_CCOEFF_NORMED)
+	return (res >= conf).any()
+
 #Type a String
 def type(msg):
 	for x in msg:
@@ -70,6 +82,8 @@ def type(msg):
 
 #Repair Fishing Rod
 def repair():
+	global stateMsg
+
 	stateMsg = "Repairing fishing rod..."
 	pydirectinput.keyUp('altleft')
 	time.sleep(0.5)
@@ -79,6 +93,8 @@ def repair():
 	if find != False:
 		pydirectinput.keyDown('r')
 		time.sleep(0.5)
+		click(find.left - 50, find.top + 5)
+		time.sleep(0.1)
 		click(find.left - 50, find.top + 5)
 		time.sleep(0.5)
 		pydirectinput.keyUp('r')
@@ -93,11 +109,35 @@ def repair():
 	else:
 		return False
 
+#State Output
+def pstate(msg):
+	sys.stdout.write('\x1b[1A')
+	sys.stdout.write('\x1b[2K')
+	print(str(msg))
+
+#Macros
+def macro():
+	global paused
+	global hotkeys
+
+	if keyboard.is_pressed(hotkeys[0]) == True: #Pause
+		if paused:
+			paused = False
+		else:
+			paused = True
+	if paused == True:
+		time.sleep(1)
+		pstate("Paused")
+		macro()
+	if keyboard.is_pressed(hotkeys[1]) == True: #Quit
+		sys.exit()
+
 time.sleep(2)
 print(Fore.GREEN + "Bot running!" + Fore.WHITE)
 
 state = 1
 _repairCycle = 0
+failsafe_checks = 0
 pyautogui.FAILSAFE = False
 stateMsg = "Checking for active fishing..."
 print("Checking...")
@@ -112,9 +152,12 @@ while True:
 			_repairCycle = 0
 			repair()
 
+		macro()
+
 		if state == 1: #Check Fishing
 			stateMsg = "Checking for active fishing..."
 			pydirectinput.keyUp('altleft')
+			failsafe_checks = 0
 			find = search('hook', 0.8)
 			if find != False:
 				state = 2
@@ -132,12 +175,16 @@ while True:
 			if find != False:
 				pyautogui.click(button='left')
 				pydirectinput.keyDown('altleft')
+				failsafe_checks = 0
 				state = 4
 			else:
 				#Check Completed
-				find = search('hook', 0.7, True)
-				if find != False:
-					state = 1
+				failsafe_checks += 1
+				if failsafe_checks == 10:
+					failsafe_checks = 0
+					find = search('hook', 0.7, True)
+					if find != False:
+						state = 1
 		elif state == 4: #Catch
 			stateMsg = "Catching fish..."
 			find = search('c_state1', 0.75, True)
@@ -159,10 +206,17 @@ while True:
 				state = 1
 				_repairCycle += 1
 
+			#Fish Fix
+			failsafe_checks += 1
+			if failsafe_checks == 10:
+				failsafe_checks = 0
+				find = search('c_bait', 0.7, True)
+				if find != False:
+					state = 3
+					failsafe_checks = 0
+
 		#State Output
-		sys.stdout.write('\x1b[1A')
-		sys.stdout.write('\x1b[2K')
-		print(str(stateMsg))
+		pstate(stateMsg)
 	else:
 		#Wait for game
 		state = 1

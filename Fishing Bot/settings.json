@@ -1,5 +1,6 @@
 {
     "bait": "NULL",
     "reelTime": 1.8,
-    "repairCycle": 20
+    "repairCycle": 10,
+    "hotkeys": ["ctrl", "f11"]
 }
